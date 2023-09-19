@@ -31,13 +31,13 @@ class SpeedDial extends StatefulWidget {
   final String? heroTag;
 
   /// The color of the background of this `SpeedDial`
-  final Color? backgroundColor;
+  final Color backgroundColor;
 
   /// The color of the foreground of this `SpeedDial`
   final Color? foregroundColor;
 
   /// The color of the background of this `SpeedDial` when it is open
-  final Color? activeBackgroundColor;
+  final Color activeBackgroundColor;
 
   /// The color of the foreground of this `SpeedDial` when it is open
   final Color? activeForegroundColor;
@@ -134,9 +134,9 @@ class SpeedDial extends StatefulWidget {
     Key? key,
     this.children = const [],
     this.visible = true,
-    this.backgroundColor,
+    required this.backgroundColor,
     this.foregroundColor,
-    this.activeBackgroundColor,
+    required this.activeBackgroundColor,
     this.activeForegroundColor,
     this.elevation = 6.0,
     this.buttonSize = const Size(56.0, 56.0),
@@ -293,6 +293,7 @@ class _SpeedDialState extends State<SpeedDial>
               shape: widget.shape,
               onTap: _toggleChildren,
               animation: _controller,
+              color: widget.activeBackgroundColor,
               child: widget.activeChild,
             );
           },
@@ -333,11 +334,7 @@ class _SpeedDialState extends State<SpeedDial>
     );
 
     final backgroundColorTween = ColorTween(
-        begin: widget.backgroundColor,
-        end: widget.activeBackgroundColor ?? widget.backgroundColor);
-    final foregroundColorTween = ColorTween(
-        begin: widget.foregroundColor,
-        end: widget.activeForegroundColor ?? widget.foregroundColor);
+        begin: widget.backgroundColor, end: widget.activeBackgroundColor);
 
     var animatedFloatingButton = AnimatedBuilder(
       animation: _controller,
@@ -351,9 +348,7 @@ class _SpeedDialState extends State<SpeedDial>
             dialRoot: widget.dialRoot != null
                 ? widget.dialRoot!(context, _open, _toggleChildren)
                 : null,
-            backgroundColor: widget.backgroundColor != null
-                ? backgroundColorTween.lerp(_controller.value)
-                : null,
+            backgroundColor: backgroundColorTween.lerp(_controller.value),
             // foregroundColor: widget.foregroundColor != null
             //     ? foregroundColorTween.lerp(_controller.value)
             //     : null,

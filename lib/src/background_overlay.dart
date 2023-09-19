@@ -12,7 +12,7 @@ class BackgroundOverlay extends AnimatedWidget {
   final VoidCallback? onTap;
   final bool closeManually;
   final Widget child;
-
+  final Color color;
   const BackgroundOverlay({
     Key? key,
     this.onTap,
@@ -22,6 +22,7 @@ class BackgroundOverlay extends AnimatedWidget {
     required this.layerLink,
     required this.closeManually,
     required this.child,
+    required this.color,
   }) : super(key: key, listenable: animation);
 
   @override
@@ -62,9 +63,9 @@ class BackgroundOverlay extends AnimatedWidget {
                   child: Container(
                     width: dialKey.globalPaintBounds?.size.width,
                     height: dialKey.globalPaintBounds?.size.height,
-                    decoration: const ShapeDecoration(
-                      shape: StadiumBorder(),
-                      color: Colors.white,
+                    decoration: ShapeDecoration(
+                      shape: const StadiumBorder(),
+                      color: color,
                     ),
                     child: child,
                   ),

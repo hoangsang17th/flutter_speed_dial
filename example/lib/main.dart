@@ -422,9 +422,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
           heroTag: 'speed-dial-hero-tag',
           // foregroundColor: Colors.black,
-          // backgroundColor: Colors.white,
+          backgroundColor: Colors.white,
           // activeForegroundColor: Colors.red,
-          // activeBackgroundColor: Colors.blue,
+          activeBackgroundColor: Colors.blue,
 
           animationCurve: Curves.elasticInOut,
           isOpenOnStart: false,
