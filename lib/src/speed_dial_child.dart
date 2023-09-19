@@ -5,22 +5,6 @@ class SpeedDialChild {
   /// The key of the speed dial child.
   final Key? key;
 
-  /// The label to render to the left of the button
-  final String? label;
-
-  /// The Shadow for [label] String
-  final List<BoxShadow>? labelShadow;
-
-  /// The style of the label
-  final TextStyle? labelStyle;
-
-  /// The background color of the label
-  final Color? labelBackgroundColor;
-
-  /// If this is provided it will replace the default widget, therefore [label],
-  /// [labelStyle] and [labelBackgroundColor] should be null
-  final Widget? labelWidget;
-
   /// The child widget for this `SpeedDialChild`
   final Widget? child;
 
@@ -47,11 +31,6 @@ class SpeedDialChild {
 
   SpeedDialChild({
     this.key,
-    this.label,
-    this.labelStyle,
-    this.labelBackgroundColor,
-    this.labelWidget,
-    this.labelShadow,
     this.child,
     this.visible = true,
     this.backgroundColor,

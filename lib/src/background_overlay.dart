@@ -1,17 +1,17 @@
 library flutter_speed_dial;
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'global_key_extension.dart';
 
 class BackgroundOverlay extends AnimatedWidget {
-  final Color color;
-  final double opacity;
   final GlobalKey dialKey;
   final LayerLink layerLink;
   final ShapeBorder shape;
   final VoidCallback? onTap;
   final bool closeManually;
-  final String? tooltip;
+  final Widget child;
 
   const BackgroundOverlay({
     Key? key,
@@ -21,25 +21,35 @@ class BackgroundOverlay extends AnimatedWidget {
     required this.dialKey,
     required this.layerLink,
     required this.closeManually,
-    required this.tooltip,
-    this.color = Colors.white,
-    this.opacity = 0.7,
+    required this.child,
   }) : super(key: key, listenable: animation);
 
   @override
   Widget build(BuildContext context) {
     final Animation<double> animation = listenable as Animation<double>;
-    return ColorFiltered(
-        colorFilter: ColorFilter.mode(
-            color.withOpacity(opacity * animation.value), BlendMode.srcOut),
-        child: Stack(
-          fit: StackFit.expand,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: () {
+        return Stack(
           children: [
             GestureDetector(
+              behavior: HitTestBehavior.translucent,
               onTap: closeManually ? null : onTap,
-              child: Container(
-                decoration: BoxDecoration(
-                    color: color, backgroundBlendMode: BlendMode.dstOut),
+              child: BackdropFilter(
+                blendMode: BlendMode.srcATop,
+                filter: ImageFilter.blur(
+                  sigmaX: 5 * animation.value,
+                  sigmaY: 5 * animation.value,
+                ),
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: [
+                    Colors.white.withOpacity(0.36),
+                    Colors.white.withOpacity(0.4),
+                  ])),
+                ),
               ),
             ),
             Positioned(
@@ -47,33 +57,23 @@ class BackgroundOverlay extends AnimatedWidget {
               child: CompositedTransformFollower(
                 link: layerLink,
                 showWhenUnlinked: false,
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: () {
-                    final Widget child = GestureDetector(
-                      onTap: onTap,
-                      child: Container(
-                        width: dialKey.globalPaintBounds?.size.width,
-                        height: dialKey.globalPaintBounds?.size.height,
-                        decoration: ShapeDecoration(
-                          shape: shape == const CircleBorder()
-                              ? const StadiumBorder()
-                              : shape,
-                          color: Colors.white,
-                        ),
-                      ),
-                    );
-                    return tooltip != null && tooltip!.isNotEmpty
-                        ? Tooltip(
-                            message: tooltip!,
-                            child: child,
-                          )
-                        : child;
-                  }(),
+                child: GestureDetector(
+                  onTap: onTap,
+                  child: Container(
+                    width: dialKey.globalPaintBounds?.size.width,
+                    height: dialKey.globalPaintBounds?.size.height,
+                    decoration: const ShapeDecoration(
+                      shape: StadiumBorder(),
+                      color: Colors.white,
+                    ),
+                    child: child,
+                  ),
                 ),
               ),
             ),
           ],
-        ));
+        );
+      }(),
+    );
   }
 }

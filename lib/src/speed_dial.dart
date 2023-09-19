@@ -54,55 +54,17 @@ class SpeedDial extends StatefulWidget {
   /// The shape of this `SpeedDial`
   final ShapeBorder shape;
 
-  /// The gradient decoration for this `SpeedDial`
-  final Gradient? gradient;
-
-  /// The shape of the gradient decoration for this `SpeedDial`
-  final BoxShape gradientBoxShape;
-
   /// Whether speedDial initialize with open state or not, defaults to false.
   final bool isOpenOnStart;
 
   /// Whether to close the dial on pop if it's open.
   final bool closeDialOnPop;
 
-  /// The color of the background overlay.
-  final Color? overlayColor;
-
-  /// The opacity of the background overlay when the dial is open.
-  final double overlayOpacity;
-
-  /// The animated icon to show as the main button child. If this is provided the [child] is ignored.
-  final AnimatedIconData? animatedIcon;
-
-  /// The theme for the animated icon.
-  /// This is only applied to [animatedIcon].
-  final IconThemeData? animatedIconTheme;
-
-  /// The icon of the main button, ignored if [animatedIcon] is non [null].
-  final IconData? icon;
-
-  /// The active icon of the main button, Defaults to icon if not specified, ignored if [animatedIcon] is non [null].
-  final IconData? activeIcon;
-
   /// If true then rotation animation will be used when animating b/w activeIcon and icon.
   final bool useRotationAnimation;
 
   /// The angle of the iconRotation
   final double animationAngle;
-
-  /// The theme for the icon generally includes color and size.
-  /// The iconTheme is only applied to [child] and [activeChild] or [icon] and [activeIcon].
-  final IconThemeData? iconTheme;
-
-  /// The label of the main button.
-  final Widget? label;
-
-  /// The active label of the main button, Defaults to label if not specified.
-  final Widget? activeLabel;
-
-  /// Transition Builder between label and activeLabel, defaults to FadeTransition.
-  final Widget Function(Widget, Animation<double>)? labelTransitionBuilder;
 
   /// Repopulate children every time just before opening the dial. If you provide [onOpenBuilder]
   /// then you must also provide a non-const [children] (e.g. `children: []`) since [children] is
@@ -154,11 +116,11 @@ class SpeedDial extends StatefulWidget {
       BuildContext context, bool open, VoidCallback toggleChildren)? dialRoot;
 
   /// This is the child of the FAB, if specified it will ignore icon, activeIcon.
-  final Widget? child;
+  final Widget child;
 
   /// This is the active child of the FAB, if specified it will animate b/w this
   /// and the child.
-  final Widget? activeChild;
+  final Widget activeChild;
 
   final bool switchLabelPosition;
 
@@ -176,30 +138,18 @@ class SpeedDial extends StatefulWidget {
     this.foregroundColor,
     this.activeBackgroundColor,
     this.activeForegroundColor,
-    this.gradient,
-    this.gradientBoxShape = BoxShape.rectangle,
     this.elevation = 6.0,
     this.buttonSize = const Size(56.0, 56.0),
     this.childrenButtonSize = const Size(56.0, 56.0),
     this.dialRoot,
     this.mini = false,
-    this.overlayOpacity = 0.8,
-    this.overlayColor,
     this.tooltip,
     this.heroTag,
-    this.animatedIcon,
-    this.animatedIconTheme,
-    this.icon,
-    this.activeIcon,
-    this.child,
-    this.activeChild,
+    required this.child,
+    required this.activeChild,
     this.switchLabelPosition = false,
     this.useRotationAnimation = true,
     this.animationAngle = pi / 2,
-    this.iconTheme,
-    this.label,
-    this.activeLabel,
-    this.labelTransitionBuilder,
     this.onOpenBuilder,
     this.onOpen,
     this.onClose,
@@ -336,19 +286,14 @@ class _SpeedDialState extends State<SpeedDial>
       if (widget.renderOverlay) {
         backgroundOverlay = OverlayEntry(
           builder: (ctx) {
-            bool dark = Theme.of(ctx).brightness == Brightness.dark;
             return BackgroundOverlay(
               dialKey: dialKey,
               layerLink: _layerLink,
               closeManually: widget.closeManually,
-              tooltip: widget.tooltip,
               shape: widget.shape,
               onTap: _toggleChildren,
-              // (_open && !widget.closeManually) ? _toggleChildren : null,
               animation: _controller,
-              color: widget.overlayColor ??
-                  (dark ? Colors.grey[900] : Colors.white)!,
-              opacity: widget.overlayOpacity,
+              child: widget.activeChild,
             );
           },
         );
@@ -367,85 +312,24 @@ class _SpeedDialState extends State<SpeedDial>
     });
   }
 
-  Widget _renderButton() {
-    var child = widget.animatedIcon != null
-        ? Container(
-            decoration: BoxDecoration(
-              shape: widget.gradientBoxShape,
-              gradient: widget.gradient,
-            ),
-            child: Center(
-              child: AnimatedIcon(
-                icon: widget.animatedIcon!,
-                progress: _controller,
-                color: widget.animatedIconTheme?.color,
-                size: widget.animatedIconTheme?.size,
-              ),
-            ),
-          )
-        : AnimatedBuilder(
-            animation: _controller,
-            builder: (BuildContext context, _) => Transform.rotate(
-              angle:
-                  (widget.activeChild != null || widget.activeIcon != null) &&
-                          widget.useRotationAnimation
-                      ? _controller.value * widget.animationAngle
-                      : 0,
-              child: AnimatedSwitcher(
-                  duration: widget.animationDuration,
-                  child: (widget.child != null && _controller.value < 0.4)
-                      ? widget.child
-                      : (widget.activeIcon == null &&
-                                  widget.activeChild == null ||
-                              _controller.value < 0.4)
-                          ? Container(
-                              decoration: BoxDecoration(
-                                shape: widget.gradientBoxShape,
-                                gradient: widget.gradient,
-                              ),
-                              child: Center(
-                                child: widget.icon != null
-                                    ? Icon(
-                                        widget.icon,
-                                        key: const ValueKey<int>(0),
-                                        color: widget.iconTheme?.color,
-                                        size: widget.iconTheme?.size,
-                                      )
-                                    : widget.child,
-                              ),
-                            )
-                          : Transform.rotate(
-                              angle:
-                                  widget.useRotationAnimation ? -pi * 1 / 2 : 0,
-                              child: widget.activeChild ??
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      shape: widget.gradientBoxShape,
-                                      gradient: widget.gradient,
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        widget.activeIcon,
-                                        key: const ValueKey<int>(1),
-                                        color: widget.iconTheme?.color,
-                                        size: widget.iconTheme?.size,
-                                      ),
-                                    ),
-                                  ),
-                            )),
-            ),
-          );
-
-    var label = AnimatedSwitcher(
-      duration: widget.animationDuration,
-      transitionBuilder: widget.labelTransitionBuilder ??
-          (child, animation) => FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
-      child: (!_open || widget.activeLabel == null)
-          ? widget.label
-          : widget.activeLabel,
+  Widget _renderButton({
+    LayerLink? link,
+    GlobalKey<State<StatefulWidget>>? key,
+  }) {
+    var child = AnimatedBuilder(
+      animation: _controller,
+      builder: (BuildContext context, _) => Transform.rotate(
+        angle: 0,
+        child: AnimatedSwitcher(
+          duration: widget.animationDuration,
+          child: (_controller.value < 0.4)
+              ? widget.child
+              : Transform.rotate(
+                  angle: widget.useRotationAnimation ? -pi * 1 / 2 : 0,
+                  child: widget.activeChild,
+                ),
+        ),
+      ),
     );
 
     final backgroundColorTween = ColorTween(
@@ -458,8 +342,8 @@ class _SpeedDialState extends State<SpeedDial>
     var animatedFloatingButton = AnimatedBuilder(
       animation: _controller,
       builder: (context, ch) => CompositedTransformTarget(
-          link: _layerLink,
-          key: dialKey,
+          link: link ?? _layerLink,
+          key: key ?? dialKey,
           child: AnimatedFloatingButton(
             visible: widget.visible,
             tooltip: widget.tooltip,
@@ -470,16 +354,15 @@ class _SpeedDialState extends State<SpeedDial>
             backgroundColor: widget.backgroundColor != null
                 ? backgroundColorTween.lerp(_controller.value)
                 : null,
-            foregroundColor: widget.foregroundColor != null
-                ? foregroundColorTween.lerp(_controller.value)
-                : null,
-            elevation: widget.elevation,
+            // foregroundColor: widget.foregroundColor != null
+            //     ? foregroundColorTween.lerp(_controller.value)
+            //     : null,
+            elevation: 0,
             onLongPress: _toggleChildren,
             callback: (_open || widget.onPress == null)
                 ? _toggleChildren
                 : widget.onPress,
             size: widget.buttonSize,
-            label: widget.label != null ? label : null,
             heroTag: widget.heroTag,
             shape: widget.shape,
             child: child,
@@ -557,11 +440,6 @@ class _ChildrensOverlay extends StatelessWidget {
             foregroundColor: child.foregroundColor,
             elevation: child.elevation,
             buttonSize: widget.childrenButtonSize,
-            label: child.label,
-            labelStyle: child.labelStyle,
-            labelBackgroundColor: child.labelBackgroundColor,
-            labelWidget: child.labelWidget,
-            labelShadow: child.labelShadow,
             onTap: child.onTap,
             onLongPress: child.onLongPress,
             toggleChildren: () {

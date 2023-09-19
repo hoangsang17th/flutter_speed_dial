@@ -396,37 +396,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           // / This is ignored if animatedIcon is non null
           // child: Text("open"),
           // activeChild: Text("close"),
-          icon: Icons.add,
-          activeIcon: Icons.close,
-          spacing: 3,
-          mini: mini,
+
           openCloseDial: isDialOpen,
           childPadding: const EdgeInsets.all(5),
           spaceBetweenChildren: 4,
-          dialRoot: customDialRoot
-              ? (ctx, open, toggleChildren) {
-                  return ElevatedButton(
-                    onPressed: toggleChildren,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[900],
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 18),
-                    ),
-                    child: const Text(
-                      "Custom Dial Root",
-                      style: TextStyle(fontSize: 17),
-                    ),
-                  );
-                }
-              : null,
+
           buttonSize:
               buttonSize, // it's the SpeedDial size which defaults to 56 itself
           // iconTheme: IconThemeData(size: 22),
-          label: extend
-              ? const Text("Open")
-              : null, // The label of the main button.
-          /// The active label of the main button, Defaults to label if not specified.
-          activeLabel: extend ? const Text("Close") : null,
+          child: const Icon(Icons.add),
+          activeChild: const Icon(Icons.remove),
 
           /// Transition Builder between label and activeLabel, defaults to FadeTransition.
           // labelTransitionBuilder: (widget, animation) => ScaleTransition(scale: animation,child: widget),
@@ -434,37 +413,28 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           childrenButtonSize: childrenButtonSize,
           visible: visible,
           direction: speedDialDirection,
-          switchLabelPosition: switchLabelPosition,
 
           /// If true user is forced to close dial manually
           closeManually: closeManually,
-
-          /// If false, backgroundOverlay will not be rendered.
-          renderOverlay: renderOverlay,
-          // overlayColor: Colors.black,
-          // overlayOpacity: 0.5,
           onOpen: () => debugPrint('OPENING DIAL'),
           onClose: () => debugPrint('DIAL CLOSED'),
           useRotationAnimation: useRAnimation,
-          tooltip: 'Open Speed Dial',
+
           heroTag: 'speed-dial-hero-tag',
           // foregroundColor: Colors.black,
           // backgroundColor: Colors.white,
           // activeForegroundColor: Colors.red,
           // activeBackgroundColor: Colors.blue,
-          elevation: 8.0,
+
           animationCurve: Curves.elasticInOut,
           isOpenOnStart: false,
-          shape: customDialRoot
-              ? const RoundedRectangleBorder()
-              : const StadiumBorder(),
+
           // childMargin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           children: [
             SpeedDialChild(
               child: !rmicons ? const Icon(Icons.accessibility) : null,
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
-              label: 'First',
               onTap: () => setState(() => rmicons = !rmicons),
               onLongPress: () => debugPrint('FIRST CHILD LONG PRESS'),
             ),
@@ -472,14 +442,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: !rmicons ? const Icon(Icons.brush) : null,
               backgroundColor: Colors.deepOrange,
               foregroundColor: Colors.white,
-              label: 'Second',
               onTap: () => debugPrint('SECOND CHILD'),
             ),
             SpeedDialChild(
               child: !rmicons ? const Icon(Icons.margin) : null,
               backgroundColor: Colors.indigo,
               foregroundColor: Colors.white,
-              label: 'Show Snackbar',
               visible: true,
               onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text(("Third Child Pressed")))),
